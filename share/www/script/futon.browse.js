@@ -803,14 +803,17 @@
       var urlParts = location.search.substr(1).split("/");
       var dbName = decodeURIComponent(urlParts.shift());
       if (urlParts.length) {
-        var idParts = urlParts.join("/").split("@", 2);
+        var cloneParts = urlParts.join("/").split("&", 2);
+		var idParts = cloneParts[0].split("@", 2);
         var docId = decodeURIComponent(idParts[0]);
         var docRev = (idParts.length > 1) ? idParts[1] : null;
+		this.isClone = (cloneParts.length > 1) ? cloneParts[1] == "clone" : null;
         this.isNew = false;
       } else {
         var docId = $.couch.newUUID();
         var docRev = null;
         this.isNew = true;
+		this.isClone = false;
       }
       var db = $.couch.db(dbName);
 
@@ -915,6 +918,8 @@
 
         function handleResult(doc, revs) {
           page.doc = doc;
+		  if(page.isClone)
+			delete page.doc._rev;
           var propNames = [];
           for (var prop in doc) {
             propNames.push(prop);
@@ -1007,6 +1012,10 @@
               "/" + $.couch.encodeDocId(page.docId);
           }
         });
+      }
+
+      this.cloneDocument = function() {
+        location.href = location.href + "&clone";       
       }
 
       this.uploadAttachment = function() {
@@ -1107,7 +1116,7 @@
       }
 
       function _initValue(doc, row, fieldName) {
-        if ((fieldName == "_id" && !page.isNew) || fieldName == "_rev") {
+        if ((fieldName == "_id" && !(page.isNew || page.isClone)) || fieldName == "_rev") {
           return;
         }
 

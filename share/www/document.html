@@ -55,11 +55,24 @@ specific language governing permissions and limitations under the License.
         $("#toolbar button.save").click(page.saveDocument);
         $("#toolbar button.add").click(page.addField);
         $("#toolbar button.load").click(page.uploadAttachment);
-        if (page.isNew) {
+        if (page.isNew || page.isClone) {
           $("#toolbar button.delete").hide();
+		  $("#toolbar button.clone").hide();
         } else {
           $("#toolbar button.delete").click(page.deleteDocument);
+		  $("#toolbar button.clone").click(page.cloneDocument);
         }
+		if (page.isNew || page.isClone) {
+          $("#toolbar button.delete").hide();
+		  $("#toolbar button.clone").hide();
+        } else {
+          $("#toolbar button.delete").click(page.deleteDocument);
+		  $("#toolbar button.clone").click(page.cloneDocument);
+        }
+		if (page.isClone) {
+			$("#fields tbody.footer").hide();
+		} 
+
       });
     </script>
   </head>
@@ -77,6 +90,7 @@ specific language governing permissions and limitations under the License.
         <li><button class="add">Add Field</button></li>
         <li><button class="load">Upload Attachment…</button></li>
         <li><button class="delete">Delete Document…</button></li>
+		<li><button class="clone">Clone Document</button></li>
       </ul>
 
       <ul id="tabs">
