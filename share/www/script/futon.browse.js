@@ -809,12 +809,18 @@
         var docRev = (idParts.length > 1) ? idParts[1] : null;
 		this.isClone = (cloneParts.length > 1) ? cloneParts[1] == "clone" : null;
         this.isNew = false;
+		if(docRev != null)
+			this.isPrevRev = true;
+		else
+			this.isPrevRev  = false;
       } else {
         var docId = $.couch.newUUID();
         var docRev = null;
         this.isNew = true;
 		this.isClone = false;
+		this.isPrevRev  = false;
       }
+	  
       var db = $.couch.db(dbName);
 
       $.futon.storage.declare("tab", {defaultValue: "tabular", scope: "cookie"});
@@ -915,7 +921,6 @@
 
       this.updateFieldListing = function(noReload) {
         $("#fields tbody.content").empty();
-
         function handleResult(doc, revs) {
           page.doc = doc;
 		  if(page.isClone)
@@ -1018,6 +1023,21 @@
         location.href = location.href + "&clone";       
       }
 
+	  this.revertRevision = function() {
+			var revs = null;
+			db.openDoc(page.doc._id, {revs_info: true,
+				success: function(doc) {
+					revs = doc._revs_info || [];
+					delete doc._revs_info;
+					if(revs.length>0){		  
+						page.doc._rev = revs[0].rev;
+						page.saveDocument();
+					}
+				}
+			});
+
+      }
+	  
       this.uploadAttachment = function() {
         if (page.isDirty) {
           alert("You need to save or revert any changes you have made to the " +

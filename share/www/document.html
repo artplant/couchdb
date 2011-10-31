@@ -52,7 +52,7 @@ specific language governing permissions and limitations under the License.
         $("#tabs li.tabular a").click(page.activateTabularView);
         $("#tabs li.source a").click(page.activateSourceView);
 
-        $("#toolbar button.save").click(page.saveDocument);
+        
         $("#toolbar button.add").click(page.addField);
         $("#toolbar button.load").click(page.uploadAttachment);
         if (page.isNew || page.isClone) {
@@ -68,6 +68,15 @@ specific language governing permissions and limitations under the License.
         } else {
           $("#toolbar button.delete").click(page.deleteDocument);
 		  $("#toolbar button.clone").click(page.cloneDocument);
+        }
+		if (page.isPrevRev && !page.isClone) {
+          $("#toolbar button.revert").click(page.revertRevision);
+		  $("#toolbar button.delete").hide();
+		  $("#toolbar button.save").hide();
+        } else {
+          $("#toolbar button.revert").hide();
+		  $("#toolbar button.delete").click(page.deleteDocument);
+		  $("#toolbar button.save").click(page.saveDocument);
         }
 		if (page.isClone) {
 			$("#fields tbody.footer").hide();
@@ -86,6 +95,7 @@ specific language governing permissions and limitations under the License.
     </h1>
     <div id="content">
       <ul id="toolbar">
+	    <li><button class="revert">Revert Revision</button></li>
         <li><button class="save">Save Document</button></li>
         <li><button class="add">Add Field</button></li>
         <li><button class="load">Upload Attachment…</button></li>
