@@ -923,8 +923,10 @@
         $("#fields tbody.content").empty();
         function handleResult(doc, revs) {
           page.doc = doc;
-		  if(page.isClone)
+		  if(page.isClone){
 			delete page.doc._rev;
+			delete page.doc._attachments;
+          }
           var propNames = [];
           for (var prop in doc) {
             propNames.push(prop);
